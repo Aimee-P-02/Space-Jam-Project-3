@@ -1,6 +1,11 @@
 from direct.showbase.ShowBase import ShowBase
 import DefensePaths as defensePaths
 import SpaceJamClasses as spaceJamClasses
+from panda3d.core import CollisionTraverser, CollisionHandlerPusher
+import Player as playerClass
+
+
+
                                             
 
 class MyApp(ShowBase):
@@ -10,11 +15,21 @@ class MyApp(ShowBase):
 
         #base.disableMouse()
         
+
         self.setUpUniverse()
         self.setUpPlanets()
         self.setUpSpaceShip()
         self.setUpSpaceStation()
         self.setCamera()
+
+        self.cTrav = CollisionTraverser()
+        self.cTrav.traverse(self.render)
+
+        self.pusher = CollisionHandlerPusher()
+        self.pusher.addCollider(self.spaceShip.collisionNode, self.spaceShip.modelNode)
+        self.cTrav.addCollider(self.spaceShip.collisionNode, self.pusher)
+
+        self.cTrav.showCollisions(self.render)
 
         fullCycle = 60
         
@@ -56,7 +71,7 @@ class MyApp(ShowBase):
         
 
     def setUpSpaceShip(self):
-        self.spaceShip = spaceJamClasses.SpaceShip(self.loader, "./Assets/Spaceships/Dumbledore.egg", self.render, "Spaceship", "./Assets/Spaceships/spacejet_C.png", (1500,1000, -100), 50, self.taskMgr)
+        self.spaceShip = playerClass.SpaceShip(self.loader, "./Assets/Spaceships/Dumbledore.egg", self.render, "Spaceship", "./Assets/Spaceships/spacejet_C.png", (1500,1000, -100), 50, self.taskMgr, self.accept)
 
     def setUpSpaceStation(self):
         self.spaceStation = spaceJamClasses.SpaceStation(self.loader, "./Assets/Space Station/spaceStation.egg", self.render,"SpaceStation", "./Assets/Space Station/SpaceStation1_Dif2.png", (750, 275, 90), 25)
